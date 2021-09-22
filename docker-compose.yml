@@ -1,0 +1,41 @@
+version: '3'
+# define all services
+services:
+  # our service is called PHP Laravel ;-)
+  php-ci:
+    # we want to use the image which is build from our Dockerfile
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: 0175648424/awanku:v1.1
+    # apache is running on port 80 but we want to expose this to port 4000 on our local machine
+    container_name: webapp-awanku
+    restart: always
+    ports:
+      - "1085:80"
+    privileged: true
+    
+    links:
+      - mysql
+    # we mount the working dir into the container, handy for development
+    volumes:
+      - ./awanku:/var/www/html
+      #- ./000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql-awanku
+    restart: always
+    environment:
+      - "MYSQL_ROOT_PASSWORD=hadi123"
+      - "MYSQL_DATABASE=awanku"
+      - "MYSQL_PASSWORD=hadi123"
+    ports:
+      - "3310:3306"
+    volumes:
+      - ./dbdata:/var/lib/mysql
+      
+
+volumes:
+  dbdata:
